@@ -43,19 +43,10 @@ namespace parser {
 		std::string segment;
 		std::vector<std::string> seglist;
 
-		int nbToken{};
-		for (auto const &c : input) {
-			if (c == ';')
-				++nbToken;
+		while(std::getline(string, segment, ';'))
+		{
+			seglist.emplace_back(segment);
 		}
-		if (nbToken >= 1) {
-			while(std::getline(string, segment, ';'))
-			{
-				seglist.emplace_back(segment);
-			}
-		}
-		else
-			seglist.emplace_back(input);
 		return seglist;
 	}
 
@@ -100,6 +91,7 @@ namespace parser {
 	std::pair<std::string, Information> Parser::getNextCommand() noexcept
 	{
 		std::pair<std::string, Information> command;
+
 
 		command.first = _files.front();
 		_files.pop();

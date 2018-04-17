@@ -10,12 +10,13 @@ CXX	= g++ -o2
 RM	= rm -f
 
 CXXFLAGS = -I./include
-CXXFLAGS += -W -Wall -Wextra -Werror
+CXXFLAGS += -W -Wall -Wextra -Werror -std=c++11
 #LDFLAGS =
 
 NAME 	= plazza
 
-SRCS	= $(wildcard src/**/*.cpp)
+SRCS	= $(wildcard src/**/*.cpp)  \
+          src/main.cpp
 
 OBJS    = $(SRCS:.cpp=.o)
 
