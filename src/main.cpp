@@ -25,7 +25,7 @@ bool isValidInt(char *str)
 
 int main(int ac, char **av)
 {
-	if (ac != 2)
+/*	if (ac != 2)
 		return printUsage(av[0]), 84;
 	if (!isValidInt(av[1]))
 		return printUsage(av[0]), 84;
@@ -33,5 +33,15 @@ int main(int ac, char **av)
 	int maxProcesses = std::stoi(std::string(av[1]));
 	if (maxProcesses <= 0)
 		return printUsage(av[0]), 84;
+*/
+	parser::Parser parser{};
+
+	static_cast<void>(ac);
+	static_cast<void>(av);
+
+	std::pair<std::string, parser::Information> token = parser.getNextCommand();
+
+	std::cout << token.first << std::endl;
+
 	return 0;
 }
