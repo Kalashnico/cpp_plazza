@@ -26,9 +26,9 @@ int main(int ac, char **av)
 {
 	if (ac != 2)
 		return printUsage(av[0]), 84;
-
 	if (!isValidInt(av[1]))
 		return printUsage(av[0]), 84;
+
 	int maxProcesses = atoi(av[1]);
 	if (maxProcesses <= 0)
 		return printUsage(av[0]), 84;
