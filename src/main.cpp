@@ -7,8 +7,9 @@
 
 #include <iostream>
 #include <cstdlib>
+#include <Parser.hpp>
 
-void printUsage(std::string progname)
+void printUsage(const std::string &progname)
 {
 	std::cout << "Usage: " << progname << " [max_threads]" << std::endl;
 }
@@ -29,7 +30,7 @@ int main(int ac, char **av)
 	if (!isValidInt(av[1]))
 		return printUsage(av[0]), 84;
 
-	int maxProcesses = atoi(av[1]);
+	int maxProcesses = std::stoi(std::string(av[1]));
 	if (maxProcesses <= 0)
 		return printUsage(av[0]), 84;
 	return 0;
