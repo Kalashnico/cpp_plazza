@@ -9,7 +9,7 @@
 
 namespace parser {
 
-	Regex::Regex(const std::string &_file, Information info) : _file{_file}, _info{info}, _buffer{}, _matches{}
+	Regex::Regex(const std::string &file, Information info) : _file{file}, _info{info}, _buffer{}, _matches{}
 	{
 		openFile();
 	}
@@ -31,7 +31,16 @@ namespace parser {
 		else {
 			throw std::invalid_argument("Invalid file: " + _file + ".");
 		}
-		std::getline(mapStream, _buffer);
+		std::vector<std::string> buffToken{};
+
+		while(std::getline(mapStream, _buffer))
+			buffToken.emplace_back(_buffer);
+
+		_buffer = "";
+		for (auto const &c : buffToken) {
+			_buffer += c + " ";
+		}
+		std::cout << _buffer << std::endl;
 	}
 
 
@@ -51,6 +60,10 @@ namespace parser {
 				break;
 		}
 
+		std::cout << _info << std::endl;
+
+		for (auto const &c  : _matches)
+			std::cout << c << std::endl;
 	}
 
 	std::vector<std::string> Regex::parsePhone() const noexcept

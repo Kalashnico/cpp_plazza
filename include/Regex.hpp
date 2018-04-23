@@ -32,8 +32,8 @@ class Regex {
 
 	private:
 		std::string	_file;
-		std::string	_buffer;
 		Information	_info;
+		std::string	_buffer;
 		std::vector<std::string> _matches;
 	};
 }
