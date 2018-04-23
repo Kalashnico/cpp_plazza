@@ -6,14 +6,9 @@
 
 #include <string>
 #include <queue>
+#include "Plazza.hpp"
 
 namespace parser {
-
-	enum Information {
-		PHONE_NUMBER,
-		EMAIL_ADDRESS,
-		IP_ADDRESS
-	};
 
 	class Parser {
 		public:

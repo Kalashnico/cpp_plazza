@@ -39,7 +39,7 @@ int main(int ac, char **av)
 	static_cast<void>(ac);
 	static_cast<void>(av);
 
-	std::pair<std::string, parser::Information> token = parser.getNextCommand();
+	std::pair<std::string, Information> token = parser.getNextCommand();
 
 	std::cout << token.first << std::endl;
 
