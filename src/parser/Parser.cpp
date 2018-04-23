@@ -41,8 +41,8 @@ namespace parser {
 	std::vector<std::string> Parser::splitString(const std::string &input) const noexcept
 	{
 		std::istringstream string(input);
-		std::string segment;
-		std::vector<std::string> seglist;
+		std::string segment{};
+		std::vector<std::string> seglist{};
 
 		while(std::getline(string, segment, ';'))
 		{
@@ -53,8 +53,8 @@ namespace parser {
 
 	void Parser::getCommands()
 	{
-		auto input = getInput();
-		auto inputSplited = splitString(input);
+		const auto input = getInput();
+		const auto inputSplited = splitString(input);
 
 		for (auto const &s : inputSplited) {
 			std::istringstream iss(s);
@@ -64,7 +64,7 @@ namespace parser {
 			if (tokens.size() <= 1 || commandErrors(tokens))
 				throw std::invalid_argument("Command line invalid");
 
-			auto info = tokens.back();
+			const auto info = tokens.back();
 			_info.push(stringToInfo(info));
 
 			tokens.pop_back();
