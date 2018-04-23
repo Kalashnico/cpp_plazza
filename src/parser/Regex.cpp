@@ -5,6 +5,8 @@
 #include <iostream>
 #include "Regex.hpp"
 
+namespace parser {
+
 Regex::Regex(const std::string &_file, Information info) : _file{_file}, _info{info}
 {
 	parseFile();
@@ -87,4 +89,6 @@ std::vector<std::string> Regex::parseIp() const noexcept
 	};
 
 	return matches;
+}
+
 }
