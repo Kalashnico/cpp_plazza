@@ -12,17 +12,32 @@ namespace shell {
 
 Shell::Shell()
 {
+	_plazza = std::make_unique<Plazza>();
 	_parser = std::make_unique<parser::Parser>();
-
-	auto command = _parser.get()->getNextCommand();
-	while (command.second != 0) {
-		auto command = _parser.get()->getNextCommand();
-		std::cout << command.first << std::endl;
-		std::cout << command.second << std::endl;
-	}
+	sendCommandToPlazza();
 }
 
 Shell::~Shell()
 {}
+
+void Shell::run()
+{
+	std::string input = "";
+
+	while (std::getline(std::cin, input)) {
+		_parser.get()->getCommands(input);
+		sendCommandToPlazza();
+	}
+}
+
+void Shell::sendCommandToPlazza()
+{
+	auto command = _parser.get()->getNextCommand();
+
+	while (command.second != UNDEFINED) {
+		_plazza.get()->sendCommandToSlaves(command);
+		command = _parser.get()->getNextCommand();
+	}
+}
 
 }
