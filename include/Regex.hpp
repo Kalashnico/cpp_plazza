@@ -7,6 +7,7 @@
 #include <vector>
 #include <string>
 #include <regex>
+#include <thread>
 #include "Plazza.hpp"
 
 #define REGEX_PHONE "(?:0)\\s*[0-9](?:[\\s]*\\d{2}){4}"
@@ -24,8 +25,9 @@ class Regex {
 		std::vector<std::string>	parseEmail() const noexcept;
 		std::vector<std::string>	parseIp() const noexcept;
 
-
 		std::vector<std::string> getMatches() const noexcept { return  _matches; };
+
+		std::thread			createThread();
 
 	private:
 		std::string	_file;

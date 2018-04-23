@@ -19,13 +19,13 @@ namespace communication {
 
 	bool Process::isAvailable() const noexcept
 	{
-		return _commands.size() < (_nbThreads * 2);
+		return _commands.size() < ((unsigned int)_nbThreads * 2);
 	}
 
 	void Process::addCommand(std::pair<std::string, Information> cmd) noexcept
 	{
 		_commands.push(cmd);
-		if (_threads.size() < _nbThreads) {
+		if (_threads.size() < (unsigned int)_nbThreads) {
 			createThread(_commands.front());
 			_commands.pop();
 		}
@@ -36,19 +36,17 @@ namespace communication {
 	void Process::createThread(std::pair<std::string, Information> cmd) noexcept
 	{
 		parser::Regex	regex(cmd.first, cmd.second);
-		std::thread thr(regex.parseFile());
-		_threads.emplace_back(thr);
-
+		_threads.emplace_back(regex.createThread());
 	}
 
 	void Process::runProcess() noexcept
 	{
-		for (auto thread : _threads) {
+		for (auto &thread : _threads) {
 			thread.join();
 		}
 
 		if (!_commands.empty()) {
-			while (!_commands.empty() && _threads.size() < _nbThreads) {
+			while (!_commands.empty() && _threads.size() < (unsigned int)_nbThreads) {
 				createThread(_commands.front());
 				_commands.pop();
 			}

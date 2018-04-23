@@ -18,7 +18,6 @@ Regex::~Regex()
 
 void Regex::parseFile() noexcept
 {
-
 	switch (_info) {
 		case PHONE_NUMBER:
 			_matches = parsePhone();
@@ -88,6 +87,11 @@ std::vector<std::string> Regex::parseIp() const noexcept
 	};
 
 	return matches;
+}
+
+std::thread Regex::createThread()
+{
+	return std::thread(&Regex::parseFile, this);
 }
 
 }
