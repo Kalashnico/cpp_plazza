@@ -23,15 +23,13 @@ void Shell::run()
 {
 	std::string input = "";
 
-	std::cout << "> ";
 	while (std::getline(std::cin, input)) {
 		try {
 			_parser.get()->getCommands(input);
 			sendCommandToPlazza();
 		} catch(std::exception e) {
-			std::cout << "Unkown command: " << input << std::endl;
+			std::cout << "> Unkown command: " << input << std::endl;
 		}
-		std::cout << "> ";
 	}
 }
 

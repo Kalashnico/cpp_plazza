@@ -26,7 +26,7 @@ void Plazza::sendCommandToSlaves(std::pair<std::string, Information> command)
 	auto files = split(command.first, ' ');
 
 	if (!doFilesExist(files)) {
-		std::cout << "One or more files do not exist" << std::endl;
+		std::cout << "> One or more files do not exist" << std::endl;
 		return;
 	}
 
