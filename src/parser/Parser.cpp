@@ -9,22 +9,11 @@
 
 namespace parser {
 	Parser::Parser() : _files{}, _info{}
-	{
-		getCommands();
-	}
+	{}
 
 	Parser::~Parser()
 	{
 
-	}
-
-	std::string Parser::getInput() const noexcept
-	{
-		std::string input{};
-
-		std::getline(std::cin, input);
-
-		return input;
 	}
 
 	bool Parser::commandErrors(const std::vector<std::string> &tokens) const noexcept
@@ -51,9 +40,8 @@ namespace parser {
 		return seglist;
 	}
 
-	void Parser::getCommands()
+	void Parser::getCommands(const std::string &input)
 	{
-		const auto input = getInput();
 		const auto inputSplited = splitString(input);
 
 		for (auto const &s : inputSplited) {
@@ -92,13 +80,16 @@ namespace parser {
 	std::pair<std::string, Information> Parser::getNextCommand() noexcept
 	{
 		std::pair<std::string, Information> command;
+		command.first = "";
+		command.second = UNDEFINED;
 
+		if (!_files.empty()) {
+			command.first = _files.front();
+			_files.pop();
 
-		command.first = _files.front();
-		_files.pop();
-
-		command.second = _info.front();
-		_info.pop();
+			command.second = _info.front();
+			_info.pop();
+		}
 
 		return command;
 	}

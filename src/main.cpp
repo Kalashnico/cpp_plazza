@@ -35,7 +35,8 @@ int main(int ac, char **av)
 	if (maxProcesses <= 0)
 		return printUsage(av[0]), 84;
 
-	std::make_unique<shell::Shell>();
+	auto shell = std::make_unique<shell::Shell>();
+	shell->run();
 
 	return 0;
 }

@@ -15,8 +15,7 @@ namespace parser {
 			Parser();
 			~Parser();
 
-			std::string getInput() const noexcept;
-			void	getCommands();
+			void getCommands(const std::string &input);
 			Information stringToInfo(const std::string &input) const noexcept;
 			std::vector<std::string> splitString(const std::string &input) const noexcept;
 
