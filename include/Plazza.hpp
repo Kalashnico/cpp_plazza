@@ -10,6 +10,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <memory>
 
 enum Information {
 	PHONE_NUMBER,
