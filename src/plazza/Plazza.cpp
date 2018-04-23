@@ -50,7 +50,7 @@ void Plazza::sendCommandToSlaves(std::pair<std::string, Information> command)
 					// Throw a fork error;
 					break;
 				case 0:
-					slave.get()->addCommand(command);
+					slave.get()->addCommand(cmd);
 					return;
 				default:
 					break;
