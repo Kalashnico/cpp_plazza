@@ -18,6 +18,10 @@ enum Information {
 	UNDEFINED
 };
 
+namespace communication {
+	class Process;
+}
+
 namespace plazza {
 
 class Plazza {
@@ -28,10 +32,11 @@ class Plazza {
 		void sendCommandToSlaves(std::pair<std::string, Information>);
 
 	private:
+		int calculateNewSlaves(int) const noexcept;
 		std::vector<std::string> split(const std::string &, char) const noexcept;
 
 		int _maxThreads;
-		//std::vector<communication::Process> _slaves;
+		std::vector<std::unique_ptr<communication::Process>> _slaves;
 };
 
 }
