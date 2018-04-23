@@ -7,20 +7,23 @@
 #include <string>
 #include <thread>
 #include <vector>
+#include <queue>
 #include "Plazza.hpp"
 
 namespace communication {
 	class Process {
 		public:
-			Process(int _nbThreads, std::pair<std::string, Information> cmd);
+			explicit Process(int _nbThreads);
 			~Process();
 
-			void	addCommand(std::pair<std::string, Information> cmd) noexcept { _commands.emplace_back(cmd); }
-
+			bool 	isAvailable() const noexcept;
+			void	addCommand(std::pair<std::string, Information> cmd) noexcept;
+			void	createThread(std::pair<std::string, Information> cmd) noexcept;
+			void	runProcess() noexcept;
 		private:
 			int _nbThreads;
 			std::vector<std::thread> _threads;
-			std::vector<std::pair<std::string, Information>> _commands;
-
+			std::queue<std::pair<std::string, Information>> _commands;
+			bool _inactive;
 	};
 }
