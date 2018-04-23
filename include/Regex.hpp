@@ -20,6 +20,7 @@ class Regex {
 		Regex(const std::string &_file, Information info);
 		~Regex();
 
+		void	openFile();
 		void	parseFile() noexcept;
 		std::vector<std::string>	parsePhone() const noexcept;
 		std::vector<std::string>	parseEmail() const noexcept;
@@ -31,6 +32,7 @@ class Regex {
 
 	private:
 		std::string	_file;
+		std::string	_buffer;
 		Information	_info;
 		std::vector<std::string> _matches;
 	};
