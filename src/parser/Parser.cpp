@@ -34,9 +34,8 @@ namespace parser {
 		std::vector<std::string> seglist{};
 
 		while(std::getline(string, segment, ';'))
-		{
 			seglist.emplace_back(segment);
-		}
+
 		return seglist;
 	}
 

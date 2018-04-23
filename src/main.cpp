@@ -31,11 +31,11 @@ int main(int ac, char **av)
 	if (!isValidInt(av[1]))
 		return printUsage(av[0]), 84;
 
-	int maxProcesses = std::stoi(std::string(av[1]));
-	if (maxProcesses <= 0)
+	int maxThreads = std::stoi(std::string(av[1]));
+	if (maxThreads <= 0)
 		return printUsage(av[0]), 84;
 
-	auto shell = std::make_unique<shell::Shell>();
+	auto shell = std::make_unique<plazza::Shell>(maxThreads);
 	shell->run();
 
 	return 0;

@@ -11,11 +11,11 @@
 #include "Plazza.hpp"
 #include "Parser.hpp"
 
-namespace shell {
+namespace plazza {
 
 class Shell {
 	public:
-		Shell();
+		explicit Shell(int maxProcesses);
 		~Shell();
 		void run();
 
