@@ -9,7 +9,10 @@
 #include <sstream>
 #include "Plazza.hpp"
 
-Plazza::Plazza()
+namespace plazza {
+
+Plazza::Plazza(int maxThreads)
+	: _maxThreads(maxThreads)
 {}
 
 Plazza::~Plazza()
@@ -33,4 +36,6 @@ std::vector<std::string> Plazza::split(const std::string &input, char delim) con
 			seglist.emplace_back(segment);
 
 		return seglist;
+}
+
 }

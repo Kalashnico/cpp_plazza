@@ -8,11 +8,11 @@
 #include <iostream>
 #include "Shell.hpp"
 
-namespace shell {
+namespace plazza {
 
-Shell::Shell()
+Shell::Shell(int maxProcesses)
 {
-	_plazza = std::make_unique<Plazza>();
+	_plazza = std::make_unique<Plazza>(maxProcesses);
 	_parser = std::make_unique<parser::Parser>();
 	sendCommandToPlazza();
 }

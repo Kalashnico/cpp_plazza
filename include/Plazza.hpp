@@ -18,13 +18,20 @@ enum Information {
 	UNDEFINED
 };
 
+namespace plazza {
+
 class Plazza {
 	public:
-		Plazza();
+		explicit Plazza(int maxThreads);
 		~Plazza();
 
 		void sendCommandToSlaves(std::pair<std::string, Information>);
 
 	private:
 		std::vector<std::string> split(const std::string &, char) const noexcept;
+
+		int _maxThreads;
+		//std::vector<communication::Process> _slaves;
 };
+
+}
