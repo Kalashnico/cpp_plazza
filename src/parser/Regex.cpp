@@ -40,7 +40,6 @@ namespace parser {
 		for (auto const &c : buffToken) {
 			_buffer += c + " ";
 		}
-		std::cout << _buffer << std::endl;
 	}
 
 
@@ -59,11 +58,6 @@ namespace parser {
 			default:
 				break;
 		}
-
-		std::cout << _info << std::endl;
-
-		for (auto const &c  : _matches)
-			std::cout << c << std::endl;
 	}
 
 	std::vector<std::string> Regex::parsePhone() const noexcept
@@ -120,10 +114,4 @@ namespace parser {
 
 		return matches;
 	}
-
-	std::thread Regex::createThread()
-	{
-		return std::thread(&Regex::parseFile, this);
-	}
-
 }

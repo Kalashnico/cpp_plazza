@@ -36,7 +36,7 @@ namespace communication {
 	void Process::createThread(std::pair<std::string, Information> cmd) noexcept
 	{
 		parser::Regex	regex(cmd.first, cmd.second);
-		_threads.emplace_back(regex.createThread());
+		_threads.emplace_back(std::thread(&parser::Regex::parseFile, regex));
 	}
 
 	void Process::runProcess() noexcept

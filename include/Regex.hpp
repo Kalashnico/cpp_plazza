@@ -28,8 +28,6 @@ class Regex {
 
 		std::vector<std::string> getMatches() const noexcept { return  _matches; };
 
-		std::thread			createThread();
-
 	private:
 		std::string	_file;
 		Information	_info;
