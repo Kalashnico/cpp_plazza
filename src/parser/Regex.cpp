@@ -9,7 +9,6 @@ namespace parser {
 
 Regex::Regex(const std::string &_file, Information info) : _file{_file}, _info{info}
 {
-	parseFile();
 }
 
 Regex::~Regex()
