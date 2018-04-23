@@ -7,6 +7,7 @@
 
 #include <iostream>
 #include <sstream>
+#include <fstream>
 #include <unistd.h>
 #include "Plazza.hpp"
 #include "Process.hpp"
@@ -23,6 +24,12 @@ Plazza::~Plazza()
 void Plazza::sendCommandToSlaves(std::pair<std::string, Information> command)
 {
 	auto files = split(command.first, ' ');
+
+	if (!doFilesExist(files)) {
+		std::cout << "One or more files do not exist" << std::endl;
+		return;
+	}
+
 	auto nbrFiles = files.size();
 	auto slavesToCreate = calculateNewSlaves(nbrFiles);
 
@@ -50,6 +57,16 @@ void Plazza::sendCommandToSlaves(std::pair<std::string, Information> command)
 			}
 		}
 	}
+}
+
+bool Plazza::doFilesExist(const std::vector<std::string> files) const noexcept
+{
+	for (auto fileName : files) {
+		std::ifstream file(fileName);
+		if (!file.good())
+		    return false;
+	}
+	return true;
 }
 
 int Plazza::calculateNewSlaves(int nbrFiles) const noexcept

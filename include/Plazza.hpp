@@ -33,6 +33,7 @@ class Plazza {
 		void sendCommandToSlaves(std::pair<std::string, Information>);
 
 	private:
+		bool doFilesExist(const std::vector<std::string>) const noexcept;
 		int calculateNewSlaves(int) const noexcept;
 		std::vector<std::string> split(const std::string &, char) const noexcept;
 

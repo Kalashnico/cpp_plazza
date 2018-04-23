@@ -14,7 +14,6 @@ Shell::Shell(int maxProcesses)
 {
 	_plazza = std::make_unique<Plazza>(maxProcesses);
 	_parser = std::make_unique<parser::Parser>();
-	sendCommandToPlazza();
 }
 
 Shell::~Shell()
@@ -24,9 +23,15 @@ void Shell::run()
 {
 	std::string input = "";
 
+	std::cout << "> ";
 	while (std::getline(std::cin, input)) {
-		_parser.get()->getCommands(input);
-		sendCommandToPlazza();
+		try {
+			_parser.get()->getCommands(input);
+			sendCommandToPlazza();
+		} catch(std::exception e) {
+			std::cout << "Unkown command: " << input << std::endl;
+		}
+		std::cout << "> ";
 	}
 }
 
