@@ -17,25 +17,9 @@ namespace communication {
 	{
 	}
 
-	bool Process::isAvailable() const noexcept
+	void Process::createThread(command_t cmd) noexcept
 	{
-		return _commands.size() < ((unsigned int)_nbThreads * 2);
-	}
-
-	void Process::addCommand(std::pair<std::string, Information> cmd) noexcept
-	{
-		_commands.push(cmd);
-		if (_threads.size() < (unsigned int)_nbThreads) {
-			createThread(_commands.front());
-			_commands.pop();
-		}
-		_inactive = false;
-		runProcess();
-	}
-
-	void Process::createThread(std::pair<std::string, Information> cmd) noexcept
-	{
-		parser::Regex	regex(cmd.first, cmd.second);
+		parser::Regex	regex(cmd.files, cmd.info);
 		_threads.emplace_back(std::thread(&parser::Regex::parseFile, regex));
 	}
 

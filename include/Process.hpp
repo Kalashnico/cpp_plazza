@@ -16,14 +16,12 @@ namespace communication {
 			explicit Process(int _nbThreads);
 			~Process();
 
-			bool 	isAvailable() const noexcept;
-			void	addCommand(std::pair<std::string, Information> cmd) noexcept;
-			void	createThread(std::pair<std::string, Information> cmd) noexcept;
+			void	createThread(command_t cmd) noexcept;
 			void	runProcess() noexcept;
 		private:
 			int _nbThreads;
 			std::vector<std::thread> _threads;
-			std::queue<std::pair<std::string, Information>> _commands;
+			std::queue<command_t> _commands;
 			bool _inactive;
 	};
 }

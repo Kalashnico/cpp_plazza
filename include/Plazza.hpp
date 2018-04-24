@@ -19,9 +19,15 @@ enum Information {
 	UNDEFINED
 };
 
+typedef struct command_s {
+	std::string files;
+	Information info;
+} command_t;
+
 namespace communication {
 	class Process;
 }
+
 
 namespace plazza {
 
@@ -30,7 +36,7 @@ class Plazza {
 		explicit Plazza(int maxThreads);
 		~Plazza();
 
-		void sendCommandToSlaves(std::pair<std::string, Information>);
+		void sendCommandToSlaves(command_t);
 
 	private:
 		bool doFilesExist(const std::vector<std::string>) const noexcept;

@@ -76,17 +76,15 @@ namespace parser {
 			return IP_ADDRESS;
 	}
 
-	std::pair<std::string, Information> Parser::getNextCommand() noexcept
+	command_t Parser::getNextCommand() noexcept
 	{
-		std::pair<std::string, Information> command;
-		command.first = "";
-		command.second = UNDEFINED;
+		command_t command {"", UNDEFINED};
 
 		if (!_files.empty()) {
-			command.first = _files.front();
+			command.files = _files.front();
 			_files.pop();
 
-			command.second = _info.front();
+			command.info = _info.front();
 			_info.pop();
 		}
 

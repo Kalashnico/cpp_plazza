@@ -21,9 +21,9 @@ Plazza::Plazza(int maxThreads)
 Plazza::~Plazza()
 {}
 
-void Plazza::sendCommandToSlaves(std::pair<std::string, Information> command)
+void Plazza::sendCommandToSlaves(command_t command)
 {
-	auto files = split(command.first, ' ');
+	auto files = split(command.files, ' ');
 
 	if (!doFilesExist(files)) {
 		std::cout << "> One or more files do not exist" << std::endl;
@@ -32,31 +32,13 @@ void Plazza::sendCommandToSlaves(std::pair<std::string, Information> command)
 
 	auto nbrFiles = files.size();
 	auto slavesToCreate = calculateNewSlaves(nbrFiles);
+	(void)slavesToCreate;
 
-	for (int i = 0; i < slavesToCreate; i++)
+	/*for (int i = 0; i < slavesToCreate; i++)
 		_slaves.emplace_back(std::make_unique<communication::Process>(_maxThreads));
+	*/
 
-	unsigned int iterator = 0;
-
-	for (const auto &slave : _slaves) {
-		if (iterator == nbrFiles)
-			break;
-
-		if (slave.get()->isAvailable()) {
-			std::pair<std::string, Information> cmd = {files.at(iterator++), command.second};
-			pid_t pid = fork();
-			switch (pid) {
-				case -1:
-					// Throw a fork error;
-					break;
-				case 0:
-					slave.get()->addCommand(cmd);
-					return;
-				default:
-					break;
-			}
-		}
-	}
+	//TODO: Implement
 }
 
 bool Plazza::doFilesExist(const std::vector<std::string> files) const noexcept
@@ -73,10 +55,7 @@ int Plazza::calculateNewSlaves(int nbrFiles) const noexcept
 {
 	int newSlavesNeeded = nbrFiles;
 
-	for (const auto &slave : _slaves) {
-		if (slave.get()->isAvailable())
-			newSlavesNeeded--;
-	}
+	//TODO: implement
 
 	return newSlavesNeeded;
 }
