@@ -24,6 +24,9 @@ typedef struct command_s {
 	Information info;
 } command_t;
 
+std::ostream &operator<<(std::ostream &out, const command_t &cmd);
+std::istream &operator>>(std::istream &in, command_t &cmd);
+
 namespace communication {
 	class Process;
 }

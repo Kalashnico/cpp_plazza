@@ -73,3 +73,33 @@ std::vector<std::string> Plazza::split(const std::string &input, char delim) con
 }
 
 }
+
+std::ostream &operator<<(std::ostream &out, const command_t &cmd)
+{
+	out << cmd.files;
+	out << cmd.info;
+	return out;
+}
+
+std::istream &operator>>(std::istream &in, command_t &cmd)
+{
+	char info[1];
+	in >> cmd.files;
+	in >> info;
+
+	switch (info[0]) {
+		case '0':
+			cmd.info = PHONE_NUMBER;
+			break;
+		case '1':
+			cmd.info = EMAIL_ADDRESS;
+			break;
+		case '2':
+			cmd.info = IP_ADDRESS;
+			break;
+		default:
+			cmd.info = UNDEFINED;
+			break;
+	}
+	return in;
+}
