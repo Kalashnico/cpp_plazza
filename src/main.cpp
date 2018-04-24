@@ -7,7 +7,6 @@
 
 #include <iostream>
 #include <cstdlib>
-#include <Regex.hpp>
 #include "Shell.hpp"
 
 void printUsage(const std::string &progname)
