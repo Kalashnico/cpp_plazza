@@ -21,6 +21,8 @@ namespace communication {
 			void	runProcess() noexcept;
 			void 	setSlavePid(pid_t pid) noexcept { _pid = pid; }
 			pid_t 	getSlavePid() const noexcept { return _pid; }
+			InternetSockets getISocket() const noexcept {return _iSocket; }
+
 		private:
 			int _nbThreads;
 			std::vector<std::thread> _threads;

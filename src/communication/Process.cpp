@@ -2,10 +2,10 @@
 // Created by Nicolas Guerin on 17/04/2018.
 //
 
-#include <Regex.hpp>
 #include <csignal>
 #include <zconf.h>
 #include "Process.hpp"
+#include "Regex.hpp"
 
 namespace communication {
 
@@ -43,17 +43,19 @@ namespace communication {
 		auto start = static_cast<int>(clock());
 		while (true) {
 			command_t cmd = _iSocket.receive();
-			_commands.push(cmd);
 
-			if (_commands.size() >= (_nbThreads * 2))
+			if (_commands.size() >= (unsigned int)(_nbThreads * 2))
 				_iSocket.sendToMaster(-1);
-			else
+			else {
 				_iSocket.sendToMaster(1);
+				_commands.push(cmd);
+			}
+
 			if (!_inactive)
 				return;
-			if ((clock()-start)/(double)(CLOCKS_PER_SEC) > 5.00) {
+
+			if ((clock() - start) / (double)(CLOCKS_PER_SEC) > 5.00)
 				kill(getpid(), SIGKILL);
-			}
 		}
 	}
 }
