@@ -40,6 +40,7 @@ class Plazza {
 		~Plazza();
 
 		void sendCommandToSlaves(command_t);
+		void sendCommandToSlave(command_t, int) const;
 
 	private:
 		bool doFilesExist(const std::vector<std::string>) const noexcept;
@@ -50,6 +51,7 @@ class Plazza {
 		int _maxThreads;
 		int _masterSocket;
 		std::vector<std::unique_ptr<communication::Process>> _slaves;
+		struct sockaddr_in _server_addr;
 };
 
 }
