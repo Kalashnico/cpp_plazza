@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 #include <memory>
+#include <netinet/in.h>
 
 enum Information {
 	PHONE_NUMBER,
@@ -32,6 +33,8 @@ namespace communication {
 }
 
 
+#define PORT 1337
+
 namespace plazza {
 
 class Plazza {
@@ -39,13 +42,13 @@ class Plazza {
 		explicit Plazza(int maxThreads);
 		~Plazza();
 
-		void sendCommandToSlaves(command_t);
-		void sendCommandToSlave(command_t, int) const;
+		void setupCommand(command_t);
 
 	private:
+		void sendCommandToSlave(command_t, int) const;
+
 		bool doFilesExist(const std::vector<std::string>) const noexcept;
 		void checkDeadSlaves() noexcept;
-		int calculateNewSlaves(int) const noexcept;
 		std::vector<std::string> split(const std::string &, char) const noexcept;
 
 		int _maxThreads;

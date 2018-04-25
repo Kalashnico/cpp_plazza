@@ -22,7 +22,7 @@ class Shell {
 		void run();
 
 	private:
-		void sendCommandToPlazza() const noexcept;
+		void sendCommandToMaster() const noexcept;
 		void clear();
 		void exit();
 
