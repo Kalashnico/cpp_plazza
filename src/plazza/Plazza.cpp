@@ -10,10 +10,12 @@
 #include <sstream>
 #include <fstream>
 #include <unistd.h>
+#include <cstring>
 #include <sys/socket.h>
 #include <signal.h>
 #include "Plazza.hpp"
 #include "Process.hpp"
+#include "InternetSockets.hpp"
 #include "Exceptions.hpp"
 
 namespace plazza {
@@ -30,7 +32,7 @@ Plazza::Plazza(int maxThreads)
 	_server_addr.sin_addr.s_addr = INADDR_ANY;
 	_server_addr.sin_port = htons(PORT);
 
-	if(bind(_masterSocket,(struct sockaddr *)&_server_addr , sizeof(_server_addr)) < 0)
+	if (bind(_masterSocket, (struct sockaddr *)&_server_addr, sizeof(_server_addr)) < 0)
 		throw exceptions::BindError("Master socket failed to bind to port " + _server_addr.sin_port);
 
 	listen(_masterSocket , 1000);
@@ -51,23 +53,66 @@ void Plazza::setupCommand(command_t command)
 	}
 
 	auto nbrFiles = files.size();
-	(void)nbrFiles;
 
-	/*for (int i = 0; i < slavesToCreate; i++)
-		_slaves.emplace_back(std::make_unique<communication::Process>(_maxThreads));
-	*/
+	unsigned int iterator = 0;
 
-	//TODO: Implement
+	for (auto &slave : _slaves)
+		nbrFiles = sendCommandToSlave({files.at(iterator++), command.info}, slave.get()->getISocket().getSocketClient(), nbrFiles);
+
+	for (unsigned int i = 0; i < nbrFiles; i++) {
+		communication::InternetSockets iSocket(_masterSocket);
+		int addrLen = sizeof(_server_addr);
+
+		if (accept(_masterSocket, (struct sockaddr *)&_server_addr, (socklen_t *)&addrLen) < 0)
+			throw exceptions::ConnectError("Failed to accept connection");
+
+		_slaves.emplace_back(std::make_unique<communication::Process>(_maxThreads, iSocket));
+
+		pid_t slavePid = fork();
+		switch (slavePid) {
+			case -1:
+				throw exceptions::ForkError("Failed to fork slave");
+				break;
+			case 0:
+				_slaves.back().get()->runProcess();
+				return;
+			default:
+				_slaves.back().get()->setSlavePid(slavePid);
+				nbrFiles = sendCommandToSlave({files.at(iterator++), command.info}, _slaves.back().get()->getISocket().getSocketClient(), nbrFiles);
+				break;
+		}
+	}
 }
 
-void Plazza::sendCommandToSlave(command_t cmd, int socketClient) const
+int Plazza::sendCommandToSlave(command_t cmd, int socketClient, int nbrFiles)
 {
 	std::ostringstream oss;
 	oss << cmd;
 	std::string str(oss.str());
 
-	if(send(socketClient , str.c_str() , str.size() , 0) < 0)
+	if (send(socketClient, str.c_str(), str.size(), 0) < 0)
 		throw exceptions::SendError("Failed to send a command to slave");
+
+	nbrFiles = recieveSlaveStatus(nbrFiles, socketClient);
+	return nbrFiles;
+}
+
+int Plazza::recieveSlaveStatus(int nbrFiles, int socketClient)
+{
+	char message[2];
+	ssize_t readSize{};
+
+	std::memset(message, 0, BUFSIZ);
+	readSize = recv(socketClient, message, BUFSIZ, 0);
+
+	if (readSize < 0)
+		throw exceptions::RecieveError("Failed to recieve command");
+
+	std::string smessage(message);
+	if (smessage == "1")
+		nbrFiles--;
+
+	return nbrFiles;
 }
 
 bool Plazza::doFilesExist(const std::vector<std::string> files) const noexcept
@@ -83,7 +128,7 @@ bool Plazza::doFilesExist(const std::vector<std::string> files) const noexcept
 void Plazza::checkDeadSlaves() noexcept
 {
 	_slaves.erase(std::remove_if(_slaves.begin(), _slaves.end(),
-			[](std::unique_ptr<communication::Process> &_slave) { return kill(_slave.get()->getSlavePid(), 0) != 0; }),
+			[](std::unique_ptr<communication::Process> &slave) { return kill(slave.get()->getSlavePid(), 0) != 0; }),
 			_slaves.end());
 }
 

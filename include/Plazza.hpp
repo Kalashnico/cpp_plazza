@@ -45,7 +45,8 @@ class Plazza {
 		void setupCommand(command_t);
 
 	private:
-		void sendCommandToSlave(command_t, int) const;
+		int sendCommandToSlave(command_t, int, int);
+		int recieveSlaveStatus(int, int);
 
 		bool doFilesExist(const std::vector<std::string>) const noexcept;
 		void checkDeadSlaves() noexcept;
