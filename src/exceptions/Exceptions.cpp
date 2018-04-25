@@ -25,8 +25,16 @@ BindError::BindError(const std::string &message)
 	: PlazzaError("Bind Exception: " + message)
 {}
 
+ConnectError::ConnectError(const std::string &message)
+	: PlazzaError("Connect Exception: " + message)
+{}
+
 SendError::SendError(const std::string &message)
-	: PlazzaError("Bind Exception: " + message)
+	: PlazzaError("Send Exception: " + message)
+{}
+
+RecieveError::RecieveError(const std::string &message)
+	: PlazzaError("Recieve Exception: " + message)
 {}
 
 const char *PlazzaError::what() const noexcept

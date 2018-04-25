@@ -37,9 +37,19 @@ class BindError : public PlazzaError
 	public: BindError(const std::string &message);
 };
 
+class ConnectError : public PlazzaError
+{
+	public: ConnectError(const std::string &message);
+};
+
 class SendError : public PlazzaError
 {
 	public: SendError(const std::string &message);
+};
+
+class RecieveError : public PlazzaError
+{
+	public: RecieveError(const std::string &message);
 };
 
 }
