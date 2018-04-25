@@ -20,7 +20,7 @@ namespace communication {
 			command_t receive();
 			void 	sendToMaster(int) const;
 
-			int getSockeClient() const noexcept { return _socketClient; }
+			int getSocketClient() const noexcept { return _socketClient; }
 
 		private:
 			int _portNumber;
