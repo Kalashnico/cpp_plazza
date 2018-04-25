@@ -9,19 +9,25 @@
 #include <vector>
 #include <queue>
 #include "Plazza.hpp"
+#include "InternetSockets.hpp"
 
 namespace communication {
 	class Process {
 		public:
-			explicit Process(int _nbThreads);
+			Process(int nbThreads, const InternetSockets &iSocket);
 			~Process();
 
 			void	createThread(command_t cmd) noexcept;
 			void	runProcess() noexcept;
+
+			void 	setSlavePid(pid_t pid) noexcept { _pid = pid; }
+			pid_t 	getSlavePid() const noexcept { return _pid; }
 		private:
 			int _nbThreads;
 			std::vector<std::thread> _threads;
 			std::queue<command_t> _commands;
+			InternetSockets	_iSocket;
 			bool _inactive;
+			pid_t _pid;
 	};
 }
