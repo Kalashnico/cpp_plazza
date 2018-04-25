@@ -19,6 +19,7 @@ namespace communication {
 
 	void Process::createThread(command_t cmd) noexcept
 	{
+		//TODO: Check et send;
 		parser::Regex	regex(cmd.files, cmd.info);
 		_threads.emplace_back(std::thread(&parser::Regex::parseFile, regex));
 	}
@@ -41,6 +42,13 @@ namespace communication {
 		_inactive = true;
 		auto start = static_cast<int>(clock());
 		while (true) {
+			command_t cmd = _iSocket.receive();
+			_commands.push(cmd);
+
+			if (_commands.size() >= (_nbThreads * 2))
+				_iSocket.sendToMaster(-1);
+			else
+				_iSocket.sendToMaster(1);
 			if (!_inactive)
 				return;
 			if ((clock()-start)/(double)(CLOCKS_PER_SEC) > 5.00) {

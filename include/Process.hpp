@@ -19,7 +19,6 @@ namespace communication {
 
 			void	createThread(command_t cmd) noexcept;
 			void	runProcess() noexcept;
-
 			void 	setSlavePid(pid_t pid) noexcept { _pid = pid; }
 			pid_t 	getSlavePid() const noexcept { return _pid; }
 		private:

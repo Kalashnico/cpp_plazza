@@ -32,6 +32,16 @@ namespace communication {
 		close(_socketClient);
 	}
 
+	void InternetSockets::sendToMaster(int nb) const
+	{
+		switch (nb) {
+			case -1:
+				send(_masterSocket, "-1", 2, 0);
+			default:
+				send(_masterSocket, "1", 1, 0);
+		}
+	}
+
 	command_t InternetSockets::receive()
 	{
 		ssize_t readSize{};
