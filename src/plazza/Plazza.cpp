@@ -14,6 +14,7 @@
 #include <signal.h>
 #include "Plazza.hpp"
 #include "Process.hpp"
+#include "Exceptions.hpp"
 
 namespace plazza {
 
@@ -23,28 +24,24 @@ Plazza::Plazza(int maxThreads)
 	_masterSocket = socket(AF_INET , SOCK_STREAM , 0);
 
 	if (_masterSocket == -1)
-	{
-		throw std::invalid_argument("Server socket failed to create");
-	}
-	std::cout << "Socket created" << std::endl;
+		throw exceptions::SocketError("Creation of master socket failed");
 
 	_server_addr.sin_family = AF_INET;
 	_server_addr.sin_addr.s_addr = INADDR_ANY;
-	_server_addr.sin_port = htons(1337);
+	_server_addr.sin_port = htons(PORT);
 
 	if(bind(_masterSocket,(struct sockaddr *)&_server_addr , sizeof(_server_addr)) < 0)
-	{
-		throw std::invalid_argument("Bind failed");
-	}
-	std::cout << "bind done" << std::endl;
+		throw exceptions::BindError("Master socket failed to bind to port " + _server_addr.sin_port);
 
 	listen(_masterSocket , 1000);
 }
 
 Plazza::~Plazza()
-{}
+{
+	close(_masterSocket);
+}
 
-void Plazza::sendCommandToSlaves(command_t command)
+void Plazza::setupCommand(command_t command)
 {
 	auto files = split(command.files, ' ');
 
@@ -54,8 +51,7 @@ void Plazza::sendCommandToSlaves(command_t command)
 	}
 
 	auto nbrFiles = files.size();
-	auto slavesToCreate = calculateNewSlaves(nbrFiles);
-	(void)slavesToCreate;
+	(void)nbrFiles;
 
 	/*for (int i = 0; i < slavesToCreate; i++)
 		_slaves.emplace_back(std::make_unique<communication::Process>(_maxThreads));
@@ -64,24 +60,22 @@ void Plazza::sendCommandToSlaves(command_t command)
 	//TODO: Implement
 }
 
-	void Plazza::sendCommandToSlave(command_t cmd, int socketClient) const
-	{
-		std::ostringstream oss;
-		oss << cmd;
-		std::string str(oss.str());
+void Plazza::sendCommandToSlave(command_t cmd, int socketClient) const
+{
+	std::ostringstream oss;
+	oss << cmd;
+	std::string str(oss.str());
 
-		if(send(socketClient , str.c_str() , str.size() , 0) < 0)
-		{
-			throw std::invalid_argument("Send Failed.");
-		}
-	}
+	if(send(socketClient , str.c_str() , str.size() , 0) < 0)
+		throw exceptions::SendError("Failed to send a command to slave");
+}
 
 bool Plazza::doFilesExist(const std::vector<std::string> files) const noexcept
 {
 	for (auto fileName : files) {
 		std::ifstream file(fileName);
 		if (!file.good())
-		    return false;
+			return false;
 	}
 	return true;
 }
@@ -89,17 +83,8 @@ bool Plazza::doFilesExist(const std::vector<std::string> files) const noexcept
 void Plazza::checkDeadSlaves() noexcept
 {
 	_slaves.erase(std::remove_if(_slaves.begin(), _slaves.end(),
-			[](std::unique_ptr<communication::Process> _slave) { return kill(_slave.get()->getSlavePid(), 0) != 0; }),
+			[](std::unique_ptr<communication::Process> &_slave) { return kill(_slave.get()->getSlavePid(), 0) != 0; }),
 			_slaves.end());
-}
-
-int Plazza::calculateNewSlaves(int nbrFiles) const noexcept
-{
-	int newSlavesNeeded = nbrFiles;
-
-	//TODO: implement
-
-	return newSlavesNeeded;
 }
 
 std::vector<std::string> Plazza::split(const std::string &input, char delim) const noexcept

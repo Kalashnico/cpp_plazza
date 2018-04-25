@@ -7,13 +7,21 @@
 
 #include <iostream>
 #include "Shell.hpp"
+#include "Exceptions.hpp"
 
 namespace plazza {
 
 Shell::Shell(int maxProcesses)
 	: _exit(false)
 {
-	_plazza = std::make_unique<Plazza>(maxProcesses);
+	try {
+		_plazza = std::make_unique<Plazza>(maxProcesses);
+	} catch (exceptions::PlazzaError e) {
+		std::cout << e.what() << std::endl;
+		_exit = true;
+		return;
+	}
+
 	_parser = std::make_unique<parser::Parser>();
 
 	_cmds["clear"] = std::bind(&Shell::clear, this);
@@ -45,19 +53,19 @@ void Shell::run()
 
 		try {
 			_parser.get()->getCommands(input);
-			sendCommandToPlazza();
+			sendCommandToMaster();
 		} catch(std::exception e) {
 			std::cout << "> Unkown command: " << input << std::endl;
 		}
 	}
 }
 
-void Shell::sendCommandToPlazza() const noexcept
+void Shell::sendCommandToMaster() const noexcept
 {
 	auto command = _parser.get()->getNextCommand();
 
 	while (command.info != UNDEFINED) {
-		_plazza.get()->sendCommandToSlaves(command);
+		_plazza.get()->setupCommand(command);
 		command = _parser.get()->getNextCommand();
 	}
 }
