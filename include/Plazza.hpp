@@ -47,6 +47,7 @@ class Plazza {
 		std::vector<std::string> split(const std::string &, char) const noexcept;
 
 		int _maxThreads;
+		int _masterSocket;
 		std::vector<std::unique_ptr<communication::Process>> _slaves;
 };
 

@@ -9,6 +9,7 @@
 #include <sstream>
 #include <fstream>
 #include <unistd.h>
+#include <sys/socket.h>
 #include "Plazza.hpp"
 #include "Process.hpp"
 
@@ -16,7 +17,9 @@ namespace plazza {
 
 Plazza::Plazza(int maxThreads)
 	: _maxThreads(maxThreads)
-{}
+{
+	_masterSocket = socket(AF_INET , SOCK_STREAM , 0);
+}
 
 Plazza::~Plazza()
 {}

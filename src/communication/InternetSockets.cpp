@@ -6,6 +6,7 @@
 #include <zconf.h>
 #include <ctime>
 #include <sstream>
+#include <cstring>
 #include "InternetSockets.hpp"
 
 
@@ -35,7 +36,7 @@ namespace communication {
 	{
 		ssize_t readSize{};
 
-		memset(_message, 0, BUFSIZ);
+		std::memset(_message, 0, BUFSIZ);
 		readSize = recv(_socketClient, _message, BUFSIZ, 0);
 
 		if (readSize < 0)

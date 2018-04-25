@@ -9,7 +9,7 @@
 
 namespace communication {
 
-	Process::Process(int nbThreads, const InternetSockets &iSocket) : _nbThreads{nbThreads}, _threads{}, _commands{}, _iSocket{iSocket}, _inactive{false}, pid_t{}
+	Process::Process(int nbThreads, const InternetSockets &iSocket) : _nbThreads{nbThreads}, _threads{}, _commands{}, _iSocket{iSocket}, _inactive{false}, _pid{}
 	{
 	}
 
