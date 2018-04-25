@@ -43,6 +43,7 @@ class Plazza {
 
 	private:
 		bool doFilesExist(const std::vector<std::string>) const noexcept;
+		void checkDeadSlaves() noexcept;
 		int calculateNewSlaves(int) const noexcept;
 		std::vector<std::string> split(const std::string &, char) const noexcept;
 

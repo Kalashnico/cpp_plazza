@@ -5,11 +5,13 @@
 ** Main logic
 */
 
+#include <algorithm>
 #include <iostream>
 #include <sstream>
 #include <fstream>
 #include <unistd.h>
 #include <sys/socket.h>
+#include <signal.h>
 #include "Plazza.hpp"
 #include "Process.hpp"
 
@@ -52,6 +54,13 @@ bool Plazza::doFilesExist(const std::vector<std::string> files) const noexcept
 		    return false;
 	}
 	return true;
+}
+
+void Plazza::checkDeadSlaves() noexcept
+{
+	_slaves.erase(std::remove_if(_slaves.begin(), _slaves.end(),
+			[](std::unique_ptr<communication::Process> _slave) { return kill(_slave.get()->getSlavePid(), 0) != 0; }),
+			_slaves.end());
 }
 
 int Plazza::calculateNewSlaves(int nbrFiles) const noexcept
