@@ -7,6 +7,7 @@
 #include <ctime>
 #include <sstream>
 #include <cstring>
+#include <sys/select.h>
 #include "InternetSockets.hpp"
 #include "Exceptions.hpp"
 
@@ -32,18 +33,37 @@ namespace communication {
 	{
 		switch (nb) {
 			case -1:
-				if (send(_masterSocket, "-1", 2, 0) < 0)
+				if (send(_socketClient, "-1", 2, 0) < 0)
 					throw exceptions::SendError("Failed to send response to master");
 				break;
 			case 1:
-				if(send(_masterSocket, "1", 1, 0) < 0)
+				if(send(_socketClient, "1", 1, 0) < 0)
 					throw exceptions::SendError("Failed to send response to master");
 				break;
 			default:
-				if(send(_masterSocket, "0", 1, 0) < 0)
+				if(send(_socketClient, "0", 1, 0) < 0)
 					throw exceptions::SendError("Failed to send response to master");
 				break;
 		}
+	}
+
+	bool InternetSockets::canReceive()
+	{
+		timeval timeout;
+		fd_set readfds;
+
+		FD_ZERO(&readfds);
+		FD_SET(_socketClient, &readfds);
+
+		timeout.tv_sec = 1;
+		timeout.tv_usec = 0;
+
+		select(_socketClient + 1, &readfds, nullptr, nullptr, &timeout);
+
+		if (FD_ISSET(_socketClient, &readfds))
+			return true;
+
+		return false;
 	}
 
 	command_t InternetSockets::receive()
@@ -52,7 +72,6 @@ namespace communication {
 
 		std::memset(_message, 0, BUFSIZ);
 		readSize = recv(_socketClient, _message, BUFSIZ, 0);
-
 		if (readSize < 0)
 			throw exceptions::RecieveError("Failed to recieve command");
 
