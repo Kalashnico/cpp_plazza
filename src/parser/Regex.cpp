@@ -61,7 +61,7 @@ namespace parser {
 
 		//TODO: Replace with named pipes
 		for (auto match : _matches)
-			std::cout << match << std::endl;
+			std::cout << "> " << match << std::endl;
 	}
 
 	std::vector<std::string> Regex::parsePhone() const noexcept
