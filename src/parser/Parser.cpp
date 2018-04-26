@@ -33,7 +33,7 @@ namespace parser {
 		std::string segment{};
 		std::vector<std::string> seglist{};
 
-		while(std::getline(string, segment, ';'))
+		while (std::getline(string, segment, ';'))
 			seglist.emplace_back(segment);
 
 		return seglist;
@@ -46,7 +46,7 @@ namespace parser {
 		for (auto const &s : inputSplited) {
 			std::istringstream iss(s);
 			std::vector<std::string> tokens{std::istream_iterator<std::string>{iss},
-						      std::istream_iterator<std::string>{}};
+							std::istream_iterator<std::string>{}};
 
 			if (tokens.size() <= 1 || commandErrors(tokens))
 				throw std::invalid_argument("Command line invalid");
