@@ -12,6 +12,8 @@
 #include <unistd.h>
 #include <cstring>
 #include <sys/socket.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 #include <signal.h>
 #include "Plazza.hpp"
 #include "Process.hpp"
@@ -33,13 +35,16 @@ Plazza::Plazza(int maxThreads)
 	_server_addr.sin_port = htons(PORT);
 
 	if (bind(_masterSocket, (struct sockaddr *)&_server_addr, sizeof(_server_addr)) < 0)
-		throw exceptions::BindError("Master socket failed to bind to port " + _server_addr.sin_port);
+		throw exceptions::BindError("Master socket failed to bind to port " +  std::to_string(PORT));
 
 	listen(_masterSocket , 1000);
 }
 
 Plazza::~Plazza()
 {
+	checkDeadSlaves();
+	for (auto &slave : _slaves)
+		while (waitpid(slave.get()->getSlavePid(), nullptr, 0) != -1);
 	close(_masterSocket);
 }
 
@@ -52,18 +57,24 @@ void Plazza::setupCommand(command_t command)
 		return;
 	}
 
-	auto nbrFiles = files.size();
+	checkDeadSlaves();
 
+	auto nbrFiles = files.size();
 	unsigned int iterator = 0;
 
-	for (auto &slave : _slaves)
-		nbrFiles = sendCommandToSlave({files.at(iterator++), command.info}, slave.get()->getISocket().getSocketClient(), nbrFiles);
+	for (auto &slave : _slaves) {
+		try {
+			nbrFiles = sendCommandToSlave({files.at(iterator++), command.info}, slave.get()->getAcceptedSocket(), nbrFiles);
+		} catch (exceptions::SendError e) {
+		} catch (exceptions::RecieveError e) {}
+	}
 
 	for (unsigned int i = 0; i < nbrFiles; i++) {
 		communication::InternetSockets iSocket(_masterSocket);
 		int addrLen = sizeof(_server_addr);
 
-		if (accept(_masterSocket, (struct sockaddr *)&_server_addr, (socklen_t *)&addrLen) < 0)
+		int slaveSocket = accept(_masterSocket, (struct sockaddr *)&_server_addr, (socklen_t *)&addrLen);
+		if (slaveSocket < 0)
 			throw exceptions::ConnectError("Failed to accept connection");
 
 		_slaves.emplace_back(std::make_unique<communication::Process>(_maxThreads, iSocket));
@@ -78,7 +89,11 @@ void Plazza::setupCommand(command_t command)
 				return;
 			default:
 				_slaves.back().get()->setSlavePid(slavePid);
-				nbrFiles = sendCommandToSlave({files.at(iterator++), command.info}, _slaves.back().get()->getISocket().getSocketClient(), nbrFiles);
+				_slaves.back().get()->setAcceptedSocket(slaveSocket);
+				try {
+					nbrFiles = sendCommandToSlave({files.at(iterator++), command.info}, _slaves.back().get()->getAcceptedSocket(), nbrFiles);
+				} catch (exceptions::SendError e) {
+				} catch (exceptions::RecieveError e) {}
 				break;
 		}
 	}
@@ -102,8 +117,8 @@ int Plazza::recieveSlaveStatus(int nbrFiles, int socketClient)
 	char message[2];
 	ssize_t readSize{};
 
-	std::memset(message, 0, BUFSIZ);
-	readSize = recv(socketClient, message, BUFSIZ, 0);
+	memset(message, 0, 2);
+	readSize = recv(socketClient, message, 2, 0);
 
 	if (readSize < 0)
 		throw exceptions::RecieveError("Failed to recieve command");
@@ -128,8 +143,8 @@ bool Plazza::doFilesExist(const std::vector<std::string> files) const noexcept
 void Plazza::checkDeadSlaves() noexcept
 {
 	_slaves.erase(std::remove_if(_slaves.begin(), _slaves.end(),
-			[](std::unique_ptr<communication::Process> &slave) { return kill(slave.get()->getSlavePid(), 0) != 0; }),
-			_slaves.end());
+		[](std::unique_ptr<communication::Process> &slave) { return waitpid(slave.get()->getSlavePid(), nullptr, WNOHANG) == slave.get()->getSlavePid(); }),
+		_slaves.end());
 }
 
 std::vector<std::string> Plazza::split(const std::string &input, char delim) const noexcept
@@ -138,7 +153,7 @@ std::vector<std::string> Plazza::split(const std::string &input, char delim) con
 		std::string segment{};
 		std::vector<std::string> seglist{};
 
-		while(std::getline(string, segment, delim))
+		while (std::getline(string, segment, delim))
 			seglist.emplace_back(segment);
 
 		return seglist;
@@ -148,9 +163,7 @@ std::vector<std::string> Plazza::split(const std::string &input, char delim) con
 
 std::ostream &operator<<(std::ostream &out, const command_t &cmd)
 {
-	out << cmd.files;
-	out << cmd.info;
-	return out;
+	return out << cmd.files << ' ' << cmd.info;
 }
 
 std::istream &operator>>(std::istream &in, command_t &cmd)
