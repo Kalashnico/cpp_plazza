@@ -85,6 +85,7 @@ void Plazza::setupCommand(command_t command)
 				throw exceptions::ForkError("Failed to fork slave");
 				break;
 			case 0:
+				close(_masterSocket);
 				_slaves.back().get()->runProcess();
 				return;
 			default:
