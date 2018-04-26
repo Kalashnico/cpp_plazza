@@ -19,16 +19,19 @@ namespace communication {
 
 			void	createThread(command_t cmd) noexcept;
 			void	runProcess() noexcept;
+
 			void 	setSlavePid(pid_t pid) noexcept { _pid = pid; }
 			pid_t 	getSlavePid() const noexcept { return _pid; }
-			InternetSockets getISocket() const noexcept {return _iSocket; }
+
+			void	setAcceptedSocket(int socket) noexcept { _acceptedSocket = socket; }
+			int	getAcceptedSocket() const noexcept { return _acceptedSocket; }
 
 		private:
 			int _nbThreads;
 			std::vector<std::thread> _threads;
 			std::queue<command_t> _commands;
 			InternetSockets	_iSocket;
-			bool _inactive;
 			pid_t _pid;
+			int _acceptedSocket;
 	};
 }
