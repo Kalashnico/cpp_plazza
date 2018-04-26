@@ -91,7 +91,7 @@ void Plazza::setupCommand(command_t command)
 				_slaves.back().get()->setSlavePid(slavePid);
 				_slaves.back().get()->setAcceptedSocket(slaveSocket);
 				try {
-					nbrFiles = sendCommandToSlave({files.at(iterator++), command.info}, _slaves.back().get()->getAcceptedSocket(), nbrFiles);
+					sendCommandToSlave({files.at(iterator++), command.info}, _slaves.back().get()->getAcceptedSocket(), nbrFiles);
 				} catch (exceptions::SendError e) {
 				} catch (exceptions::RecieveError e) {}
 				break;
