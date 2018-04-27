@@ -24,32 +24,38 @@ class PlazzaError : public std::exception
 
 class ForkError : public PlazzaError
 {
-	public: ForkError(const std::string &message);
+	public:
+		ForkError(const std::string &message);
 };
 
 class SocketError : public PlazzaError
 {
-	public: SocketError(const std::string &message);
+	public:
+		SocketError(const std::string &message);
 };
 
 class BindError : public PlazzaError
 {
-	public: BindError(const std::string &message);
+	public:
+		BindError(const std::string &message);
 };
 
 class ConnectError : public PlazzaError
 {
-	public: ConnectError(const std::string &message);
+	public:
+		ConnectError(const std::string &message);
 };
 
 class SendError : public PlazzaError
 {
-	public: SendError(const std::string &message);
+	public:
+		SendError(const std::string &message);
 };
 
 class RecieveError : public PlazzaError
 {
-	public: RecieveError(const std::string &message);
+	public:
+		RecieveError(const std::string &message);
 };
 
 }
