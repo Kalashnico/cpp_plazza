@@ -24,8 +24,8 @@ Shell::Shell(int maxProcesses)
 
 	_parser = std::make_unique<parser::Parser>();
 
-	_cmds["clear"] = std::bind(&Shell::clear, this);
-	_cmds["exit"] = std::bind(&Shell::exit, this);
+	_cmds["clear"] = &Shell::clear;
+	_cmds["exit"] = &Shell::exit;
 }
 
 Shell::~Shell()
@@ -47,7 +47,7 @@ void Shell::run()
 
 	while (!_exit && std::getline(std::cin, input)) {
 		if (_cmds.find(input) != _cmds.end()) {
-			_cmds[input]();
+			(this->*_cmds[input])();
 			continue;
 		}
 

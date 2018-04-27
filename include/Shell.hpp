@@ -9,7 +9,6 @@
 
 #include <memory>
 #include <map>
-#include <functional>
 #include "Plazza.hpp"
 #include "Parser.hpp"
 
@@ -30,7 +29,7 @@ class Shell {
 
 		std::unique_ptr<Plazza> _plazza;
 		std::unique_ptr<parser::Parser> _parser;
-		std::map<std::string, std::function<void(void)>> _cmds;
+		std::map<std::string, void (plazza::Shell::*)()> _cmds;
 };
 
 }
