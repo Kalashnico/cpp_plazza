@@ -23,7 +23,7 @@ namespace parser {
 			bool commandErrors(const std::vector<std::string> &tokens) const noexcept;
 
 			//Getter
-			command_t getNextCommand() noexcept;
+			command getNextCommand() noexcept;
 
 		private:
 			std::queue<std::string> _files;

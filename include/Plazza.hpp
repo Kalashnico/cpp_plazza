@@ -20,13 +20,13 @@ enum Information {
 	UNDEFINED
 };
 
-typedef struct command_s {
+struct command {
 	std::string files;
 	Information info;
-} command_t;
+};
 
-std::ostream &operator<<(std::ostream &out, const command_t &cmd);
-std::istream &operator>>(std::istream &in, command_t &cmd);
+std::ostream &operator<<(std::ostream &out, const command &cmd);
+std::istream &operator>>(std::istream &in, command &cmd);
 
 namespace communication {
 	class Process;
@@ -42,10 +42,10 @@ class Plazza {
 		explicit Plazza(int maxThreads);
 		~Plazza();
 
-		void setupCommand(command_t);
+		void setupCommand(command);
 
 	private:
-		int sendCommandToSlave(command_t, int, int);
+		int sendCommandToSlave(command, int, int);
 		int recieveSlaveStatus(int, int);
 
 		bool doFilesExist(const std::vector<std::string>) const noexcept;

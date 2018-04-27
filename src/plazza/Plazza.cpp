@@ -48,9 +48,9 @@ Plazza::~Plazza()
 	close(_masterSocket);
 }
 
-void Plazza::setupCommand(command_t command)
+void Plazza::setupCommand(command cmd)
 {
-	auto files = split(command.files, ' ');
+	auto files = split(cmd.files, ' ');
 
 	if (!doFilesExist(files)) {
 		std::cout << "> One or more files do not exist" << std::endl;
@@ -64,7 +64,7 @@ void Plazza::setupCommand(command_t command)
 
 	for (auto &slave : _slaves) {
 		try {
-			nbrFiles = sendCommandToSlave({files.at(iterator++), command.info}, slave.get()->getAcceptedSocket(), nbrFiles);
+			nbrFiles = sendCommandToSlave({files.at(iterator++), cmd.info}, slave.get()->getAcceptedSocket(), nbrFiles);
 		} catch (exceptions::SendError e) {
 		} catch (exceptions::RecieveError e) {}
 	}
@@ -92,7 +92,7 @@ void Plazza::setupCommand(command_t command)
 				_slaves.back().get()->setSlavePid(slavePid);
 				_slaves.back().get()->setAcceptedSocket(slaveSocket);
 				try {
-					sendCommandToSlave({files.at(iterator++), command.info}, _slaves.back().get()->getAcceptedSocket(), nbrFiles);
+					sendCommandToSlave({files.at(iterator++), cmd.info}, _slaves.back().get()->getAcceptedSocket(), nbrFiles);
 				} catch (exceptions::SendError e) {
 				} catch (exceptions::RecieveError e) {}
 				break;
@@ -100,7 +100,7 @@ void Plazza::setupCommand(command_t command)
 	}
 }
 
-int Plazza::sendCommandToSlave(command_t cmd, int socketClient, int nbrFiles)
+int Plazza::sendCommandToSlave(command cmd, int socketClient, int nbrFiles)
 {
 	std::ostringstream oss;
 	oss << cmd;
@@ -162,12 +162,12 @@ std::vector<std::string> Plazza::split(const std::string &input, char delim) con
 
 }
 
-std::ostream &operator<<(std::ostream &out, const command_t &cmd)
+std::ostream &operator<<(std::ostream &out, const command &cmd)
 {
 	return out << cmd.files << ' ' << cmd.info;
 }
 
-std::istream &operator>>(std::istream &in, command_t &cmd)
+std::istream &operator>>(std::istream &in, command &cmd)
 {
 	char info[1];
 	in >> cmd.files;

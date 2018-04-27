@@ -66,7 +66,7 @@ namespace communication {
 		return false;
 	}
 
-	command_t InternetSockets::receive()
+	command InternetSockets::receive()
 	{
 		ssize_t readSize{};
 
@@ -76,7 +76,7 @@ namespace communication {
 			throw exceptions::RecieveError("Failed to recieve command");
 
 		std::istringstream iss(_message);
-		command_t cmd{"", UNDEFINED};
+		command cmd{"", UNDEFINED};
 
 		iss >> cmd;
 		return  cmd;

@@ -18,7 +18,7 @@ namespace communication {
 			~InternetSockets();
 
 			bool canReceive();
-			command_t receive();
+			command receive();
 			void 	sendToMaster(int) const;
 
 			int getSocketClient() const noexcept { return _socketClient; }

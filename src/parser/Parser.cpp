@@ -76,19 +76,19 @@ namespace parser {
 			return IP_ADDRESS;
 	}
 
-	command_t Parser::getNextCommand() noexcept
+	command Parser::getNextCommand() noexcept
 	{
-		command_t command {"", UNDEFINED};
+		command cmd {"", UNDEFINED};
 
 		if (!_files.empty()) {
-			command.files = _files.front();
+			cmd.files = _files.front();
 			_files.pop();
 
-			command.info = _info.front();
+			cmd.info = _info.front();
 			_info.pop();
 		}
 
-		return command;
+		return cmd;
 	}
 
 }
