@@ -63,6 +63,9 @@ int Plazza::setupCommand(command cmd)
 	unsigned int iterator = 0;
 
 	for (auto &slave : _slaves) {
+		if (iterator >= nbrFiles)
+			break;
+
 		try {
 			nbrFiles = sendCommandToSlave({files.at(iterator++), cmd.info}, slave.get()->getAcceptedSocket(), nbrFiles);
 		} catch (exceptions::SendError e) {
