@@ -9,7 +9,8 @@
 
 namespace parser {
 
-	Regex::Regex(const std::string &file, Information info) : _file{file}, _info{info}, _buffer{}, _matches{}
+	Regex::Regex(const std::string &file, Information info)
+		: _file{file}, _info{info}, _buffer{}, _matches{}
 	{
 		openFile();
 	}
