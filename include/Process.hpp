@@ -5,11 +5,11 @@
 #pragma once
 
 #include <string>
-#include <thread>
 #include <vector>
 #include <queue>
 #include "Plazza.hpp"
 #include "InternetSockets.hpp"
+#include "ThreadPool.hpp"
 
 namespace communication {
 	class Process {
@@ -28,8 +28,10 @@ namespace communication {
 
 		private:
 			int _nbThreads;
-			std::vector<std::thread> _threads;
+
 			std::queue<command> _commands;
+			std::unique_ptr<ThreadPool> _threadPool;
+
 			InternetSockets	_iSocket;
 			pid_t _pid;
 			int _acceptedSocket;

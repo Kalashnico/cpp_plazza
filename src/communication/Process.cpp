@@ -6,31 +6,31 @@
 #include <zconf.h>
 #include "Process.hpp"
 #include "Regex.hpp"
+#include "Exceptions.hpp"
 
 namespace communication {
 
 	Process::Process(int nbThreads, const InternetSockets &iSocket)
-		: _nbThreads{nbThreads}, _threads{}, _commands{}, _iSocket{iSocket}, _pid{}, _acceptedSocket{}
-	{
-		//TODO: Thread pool
-	}
+		: _nbThreads{nbThreads}, _commands{}, _threadPool{nullptr}, _iSocket{iSocket}, _pid{}, _acceptedSocket{}
+	{}
 
 	Process::~Process()
 	{}
 
 	void Process::createThread(command cmd) noexcept
 	{
-		parser::Regex regex(cmd.files, cmd.info);
-		_threads.emplace_back(std::thread(&parser::Regex::parseFile, regex));
+		try {
+			_threadPool.get()->enqueueTask(cmd);
+		} catch (exceptions::EnqueueError e) {}
 	}
 
 	void Process::runProcess() noexcept
 	{
-		for (auto &thread : _threads)
-			thread.join();
+		if (_threadPool == nullptr)
+			_threadPool = std::make_unique<ThreadPool>(_nbThreads);
 
 		if (!_commands.empty()) {
-			while (!_commands.empty() && _threads.size() < (unsigned int)_nbThreads) {
+			while (!_commands.empty()) {
 				createThread(_commands.front());
 				_commands.pop();
 			}
