@@ -55,7 +55,7 @@ namespace communication {
 				inactiveSeconds++;
 
 			if (inactiveSeconds >= 5)
-				kill(getpid(), SIGKILL);
+				return;
 		}
 	}
 }

@@ -48,13 +48,13 @@ Plazza::~Plazza()
 	close(_masterSocket);
 }
 
-void Plazza::setupCommand(command cmd)
+int Plazza::setupCommand(command cmd)
 {
 	auto files = split(cmd.files, ' ');
 
 	if (!doFilesExist(files)) {
 		std::cout << "> One or more files do not exist" << std::endl;
-		return;
+		return 0;
 	}
 
 	checkDeadSlaves();
@@ -87,7 +87,7 @@ void Plazza::setupCommand(command cmd)
 			case 0:
 				close(_masterSocket);
 				_slaves.back().get()->runProcess();
-				return;
+				return 1;
 			default:
 				_slaves.back().get()->setSlavePid(slavePid);
 				_slaves.back().get()->setAcceptedSocket(slaveSocket);
@@ -98,6 +98,8 @@ void Plazza::setupCommand(command cmd)
 				break;
 		}
 	}
+
+	return 0;
 }
 
 int Plazza::sendCommandToSlave(command cmd, int socketClient, int nbrFiles)

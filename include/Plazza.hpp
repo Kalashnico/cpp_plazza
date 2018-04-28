@@ -42,7 +42,7 @@ class Plazza {
 		explicit Plazza(int maxThreads);
 		~Plazza();
 
-		void setupCommand(command);
+		int setupCommand(command);
 
 	private:
 		int sendCommandToSlave(command, int, int);

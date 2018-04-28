@@ -21,7 +21,7 @@ class Shell {
 		void run();
 
 	private:
-		void sendCommandToMaster() const noexcept;
+		void sendCommandToMaster() noexcept;
 		void clear();
 		void exit();
 

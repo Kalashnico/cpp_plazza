@@ -60,12 +60,16 @@ void Shell::run()
 	}
 }
 
-void Shell::sendCommandToMaster() const noexcept
+void Shell::sendCommandToMaster() noexcept
 {
 	auto command = _parser.get()->getNextCommand();
 
 	while (command.info != UNDEFINED) {
-		_plazza.get()->setupCommand(command);
+		int status = _plazza.get()->setupCommand(command);
+		if (status == 1) {
+			_exit = true;
+			return;
+		}
 		command = _parser.get()->getNextCommand();
 	}
 }
