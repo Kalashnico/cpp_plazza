@@ -11,7 +11,7 @@
 namespace communication {
 
 	Process::Process(int nbThreads, const InternetSockets &iSocket)
-		: _nbThreads{nbThreads}, _threadPool{nullptr}, _iSocket{iSocket}, _pid{}, _acceptedSocket{}
+		: _recievedCommands{0}, _nbThreads{nbThreads}, _threadPool{nullptr}, _iSocket{iSocket}, _pid{}, _acceptedSocket{}
 	{}
 
 	Process::~Process()

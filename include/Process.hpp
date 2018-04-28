@@ -26,9 +26,13 @@ namespace communication {
 			void	setAcceptedSocket(int socket) noexcept { _acceptedSocket = socket; }
 			int	getAcceptedSocket() const noexcept { return _acceptedSocket; }
 
-		private:
-			int _nbThreads;
+			void	incrementRecievedCommands() noexcept { _recievedCommands++; }
+			int	getRecievedCommands() const noexcept { return _recievedCommands; }
 
+		private:
+			int _recievedCommands;
+
+			int _nbThreads;
 			std::unique_ptr<ThreadPool> _threadPool;
 
 			InternetSockets	_iSocket;

@@ -60,14 +60,20 @@ int Plazza::setupCommand(command cmd)
 	checkDeadSlaves();
 
 	auto nbrFiles = files.size();
+	auto nbrSlaves = _slaves.size();
 	unsigned int iterator = 0;
 
-	for (auto &slave : _slaves) {
+	for (; iterator < nbrSlaves; iterator++) {
 		if (iterator >= nbrFiles)
 			break;
 
+		auto slave = std::min_element(_slaves.begin(), _slaves.end(),
+			[](const std::unique_ptr<communication::Process> &s1, const std::unique_ptr<communication::Process> &s2) {
+				return s1.get()->getRecievedCommands() < s2.get()->getRecievedCommands();
+			});
+
 		try {
-			nbrFiles = sendCommandToSlave({files.at(iterator++), cmd.info}, slave.get()->getAcceptedSocket(), nbrFiles);
+			nbrFiles = sendCommandToSlave({files.at(iterator), cmd.info}, slave->get(), nbrFiles);
 		} catch (exceptions::SendError e) {
 		} catch (exceptions::RecieveError e) {}
 	}
@@ -95,7 +101,7 @@ int Plazza::setupCommand(command cmd)
 				_slaves.back().get()->setSlavePid(slavePid);
 				_slaves.back().get()->setAcceptedSocket(slaveSocket);
 				try {
-					sendCommandToSlave({files.at(iterator++), cmd.info}, _slaves.back().get()->getAcceptedSocket(), nbrFiles);
+					sendCommandToSlave({files.at(iterator++), cmd.info}, _slaves.back().get(), nbrFiles);
 				} catch (exceptions::SendError e) {
 				} catch (exceptions::RecieveError e) {}
 				break;
@@ -105,8 +111,9 @@ int Plazza::setupCommand(command cmd)
 	return 0;
 }
 
-int Plazza::sendCommandToSlave(command cmd, int socketClient, int nbrFiles)
+int Plazza::sendCommandToSlave(command cmd, communication::Process *slave, int nbrFiles)
 {
+	int socketClient = slave->getAcceptedSocket();
 	std::ostringstream oss;
 	oss << cmd;
 	std::string str(oss.str());
@@ -114,11 +121,11 @@ int Plazza::sendCommandToSlave(command cmd, int socketClient, int nbrFiles)
 	if (send(socketClient, str.c_str(), str.size(), 0) < 0)
 		throw exceptions::SendError("Failed to send a command to slave");
 
-	nbrFiles = recieveSlaveStatus(nbrFiles, socketClient);
+	nbrFiles = recieveSlaveStatus(nbrFiles, socketClient, slave);
 	return nbrFiles;
 }
 
-int Plazza::recieveSlaveStatus(int nbrFiles, int socketClient)
+int Plazza::recieveSlaveStatus(int nbrFiles, int socketClient, communication::Process *slave)
 {
 	char message[2];
 	ssize_t readSize{};
@@ -130,8 +137,10 @@ int Plazza::recieveSlaveStatus(int nbrFiles, int socketClient)
 		throw exceptions::RecieveError("Failed to recieve command");
 
 	std::string smessage(message);
-	if (smessage == "1")
+	if (smessage == "1") {
 		nbrFiles--;
+		slave->incrementRecievedCommands();
+	}
 
 	return nbrFiles;
 }
