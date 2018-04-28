@@ -17,7 +17,7 @@ namespace communication {
 	Process::~Process()
 	{}
 
-	void Process::addTask(command cmd) noexcept
+	void Process::addTask(command cmd) const noexcept
 	{
 		try {
 			_threadPool.get()->enqueueTask(cmd);

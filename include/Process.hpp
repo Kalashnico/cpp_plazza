@@ -17,7 +17,7 @@ namespace communication {
 			Process(int nbThreads, const InternetSockets &iSocket);
 			~Process();
 
-			void	addTask(command cmd) noexcept;
+			void	addTask(command cmd) const noexcept;
 			void	runProcess() noexcept;
 
 			void 	setSlavePid(pid_t pid) noexcept { _pid = pid; }
