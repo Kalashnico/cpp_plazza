@@ -17,7 +17,7 @@ namespace communication {
 	Process::~Process()
 	{}
 
-	void Process::createThread(command cmd) noexcept
+	void Process::addTask(command cmd) noexcept
 	{
 		try {
 			_threadPool.get()->enqueueTask(cmd);
@@ -31,7 +31,7 @@ namespace communication {
 
 		if (!_commands.empty()) {
 			while (!_commands.empty()) {
-				createThread(_commands.front());
+				addTask(_commands.front());
 				_commands.pop();
 			}
 			runProcess();
