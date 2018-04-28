@@ -11,7 +11,7 @@
 namespace communication {
 
 	Process::Process(int nbThreads, const InternetSockets &iSocket)
-		: _nbThreads{nbThreads}, _commands{}, _threadPool{nullptr}, _iSocket{iSocket}, _pid{}, _acceptedSocket{}
+		: _nbThreads{nbThreads}, _threadPool{nullptr}, _iSocket{iSocket}, _pid{}, _acceptedSocket{}
 	{}
 
 	Process::~Process()
@@ -29,15 +29,6 @@ namespace communication {
 		if (_threadPool == nullptr)
 			_threadPool = std::make_unique<ThreadPool>(_nbThreads);
 
-		if (!_commands.empty()) {
-			while (!_commands.empty()) {
-				addTask(_commands.front());
-				_commands.pop();
-			}
-			runProcess();
-			return;
-		}
-
 		unsigned int inactiveSeconds = 0;
 		while (true) {
 			if (_iSocket.canReceive()) {
@@ -47,7 +38,7 @@ namespace communication {
 					_iSocket.sendToMaster(-1);
 				} else {
 					_iSocket.sendToMaster(1);
-					_commands.emplace(cmd);
+					addTask(cmd);
 					runProcess();
 					return;
 				}

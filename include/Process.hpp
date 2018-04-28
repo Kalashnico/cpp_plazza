@@ -29,7 +29,6 @@ namespace communication {
 		private:
 			int _nbThreads;
 
-			std::queue<command> _commands;
 			std::unique_ptr<ThreadPool> _threadPool;
 
 			InternetSockets	_iSocket;
