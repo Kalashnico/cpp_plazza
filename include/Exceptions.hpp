@@ -58,4 +58,10 @@ class RecieveError : public PlazzaError
 		RecieveError(const std::string &message);
 };
 
+class EnqueueError : public PlazzaError
+{
+	public:
+		EnqueueError(const std::string &message);
+};
+
 }

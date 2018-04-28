@@ -37,6 +37,10 @@ RecieveError::RecieveError(const std::string &message)
 	: PlazzaError("Recieve Exception: " + message)
 {}
 
+EnqueueError::EnqueueError(const std::string &message)
+	: PlazzaError("Enqueue Exception: " + message)
+{}
+
 const char *PlazzaError::what() const noexcept
 {
 	return _message.c_str();
