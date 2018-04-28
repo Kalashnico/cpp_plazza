@@ -52,7 +52,7 @@ namespace parser {
 				throw std::invalid_argument("Command line invalid");
 
 			const auto info = tokens.back();
-			_info.push(stringToInfo(info));
+			_info.emplace(stringToInfo(info));
 
 			tokens.pop_back();
 
@@ -61,7 +61,7 @@ namespace parser {
 				files += tok + " ";
 			}
 
-			_files.push(files);
+			_files.emplace(files);
 		}
 
 	}

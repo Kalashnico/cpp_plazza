@@ -47,7 +47,7 @@ namespace communication {
 					_iSocket.sendToMaster(-1);
 				} else {
 					_iSocket.sendToMaster(1);
-					_commands.push(cmd);
+					_commands.emplace(cmd);
 					runProcess();
 					return;
 				}
