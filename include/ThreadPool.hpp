@@ -23,9 +23,12 @@ class ThreadPool {
 		~ThreadPool();
 
 		void enqueueTask(command);
+		int getTasksAmount() noexcept;
+		bool isWorking() noexcept;
 
 	private:
 		std::vector<std::thread> _threads;
+		std::vector<bool> _working;
 		std::queue<command> _tasks;
 
 		std::mutex _queueMutex;

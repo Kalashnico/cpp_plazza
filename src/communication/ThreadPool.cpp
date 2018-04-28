@@ -13,11 +13,13 @@ namespace communication {
 ThreadPool::ThreadPool(int threads)
 	: _stop{false}
 {
+	for (int i = 0; i < threads; i++)
+		_working.emplace_back(false);
+
 	for (int i = 0; i < threads; i++) {
 		_threads.emplace_back(
-			[this] {
+			[this, i] {
 				while (true) {
-
 					command cmd {"", UNDEFINED};
 
 					{
@@ -33,8 +35,18 @@ ThreadPool::ThreadPool(int threads)
 						this->_tasks.pop();
 					}
 
+					{
+						std::unique_lock<std::mutex> lock(this->_queueMutex);
+						_working[i] = true;
+					}
+
 					parser::Regex regex(cmd.files, cmd.info);
 					regex.parseFile();
+
+					{
+						std::unique_lock<std::mutex> lock(this->_queueMutex);
+						_working[i] = false;
+					}
 				}
 			}
 		);
@@ -64,6 +76,29 @@ void ThreadPool::enqueueTask(command cmd)
 		_tasks.emplace(cmd);
 	}
 	condition.notify_one();
+}
+
+int ThreadPool::getTasksAmount() noexcept
+{
+	std::unique_lock<std::mutex> lock(_queueMutex);
+
+	int amount = _tasks.size();
+	for (auto isWorking : _working)
+		if (isWorking)
+			amount++;
+
+	return amount;
+}
+
+bool ThreadPool::isWorking() noexcept
+{
+	std::unique_lock<std::mutex> lock(this->_queueMutex);
+
+	for (auto isWorking : _working)
+		if (isWorking)
+			return true;
+
+	return false;
 }
 
 }

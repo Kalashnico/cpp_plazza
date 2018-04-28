@@ -43,7 +43,7 @@ namespace communication {
 			if (_iSocket.canReceive()) {
 				command cmd = _iSocket.receive();
 
-				if (_commands.size() >= (unsigned int)(_nbThreads * 2) || cmd.info == UNDEFINED) {
+				if (_threadPool.get()->getTasksAmount() >= _nbThreads * 2 || cmd.info == UNDEFINED) {
 					_iSocket.sendToMaster(-1);
 				} else {
 					_iSocket.sendToMaster(1);
@@ -54,7 +54,7 @@ namespace communication {
 			} else
 				inactiveSeconds++;
 
-			if (inactiveSeconds >= 5)
+			if (inactiveSeconds >= 5 && !_threadPool.get()->isWorking())
 				return;
 		}
 	}
