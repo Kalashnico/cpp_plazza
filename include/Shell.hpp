@@ -22,14 +22,14 @@ class Shell {
 
 	private:
 		void sendCommandToMaster() noexcept;
-		void clear();
-		void exit();
+		void clear() noexcept;
+		void exit() noexcept;
 
 		bool _exit;
 
 		std::unique_ptr<Plazza> _plazza;
 		std::unique_ptr<parser::Parser> _parser;
-		std::map<std::string, void (plazza::Shell::*)()> _cmds;
+		std::map<std::string, void (plazza::Shell::*)() noexcept> _cmds;
 };
 
 }

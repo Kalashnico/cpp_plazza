@@ -31,12 +31,12 @@ Shell::Shell(int maxProcesses)
 Shell::~Shell()
 {}
 
-void Shell::clear()
+void Shell::clear() noexcept
 {
 	std::cout << "\033[H\033[J";
 }
 
-void Shell::exit()
+void Shell::exit() noexcept
 {
 	_exit = true;
 }
