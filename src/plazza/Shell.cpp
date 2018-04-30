@@ -55,7 +55,8 @@ void Shell::run()
 			_parser.get()->getCommands(input);
 			sendCommandToMaster();
 		} catch(std::exception e) {
-			std::cout << "> Unkown command: " << input << std::endl;
+			std::cout << "> Bad command: " << input << std::endl;
+			_exit = true;
 		}
 	}
 }
