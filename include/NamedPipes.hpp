@@ -4,6 +4,15 @@
 
 #pragma once
 
-class NamedPipes {
+#include <string>
 
+class NamedPipes {
+	public:
+		NamedPipes();
+		~NamedPipes();
+		void send(const std::string &to_send);
+		std::string receive();
+	private:
+		std::string _filename;
+		bool _pipe;
 };
