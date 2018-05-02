@@ -6,44 +6,65 @@
 */
 
 #include <fstream>
+#include <sstream>
+#include <chrono>
+#include <ctime>
 #include "Logger.hpp"
 
 namespace plazza {
 
-	Logger::Logger() : _first_line(0), _filename("output_plazza.log"),
-		_lockname(".output_plazza.log.lock")
+	Logger::Logger() : _first_line(0)
 	{
+		std::time_t now =  std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+		char buf[100] = {0};
+		std::strftime(buf, sizeof(buf), "%Y-%m-%d-%T", std::localtime(&now));
+
+		std::string dateStr(buf);
+		std::ostringstream filename;
+		std::ostringstream lockname;
+		filename << "output_plazza-" << dateStr << ".log";
+		lockname << ".output_plazza-" << dateStr << ".log.lock";
+
+		_filename = filename.str();
+		_lockname = lockname.str();
 	}
 
-	std::vector<std::string> Logger::read() const
+	std::vector<std::string> Logger::read()
 	{
 		std::vector<std::string> received;
-		if (!lockExist())
+
+		while (!lockExist())
 			return received;
+
 		makeLock();
 		std::ifstream file(_filename);
 		std::string tmp;
-		for (int i = 0 ; i < _first_line ; i++)
+		for (int i = 0 ; i < _first_line; i++)
 			std::getline(file, tmp, '\n');
-		while (std::getline(file, tmp, '\n'))
+		while (std::getline(file, tmp, '\n')) {
+			_first_line++;
 			received.emplace_back(tmp);
+		}
+
 		file.close();
 		removeLock();
 		return received;
 	}
 
-	bool Logger::write(const std::vector<std::string> &to_send)
+	bool Logger::write(const std::vector<std::string> &to_send) const
 	{
 		while (!lockExist());
-		std::ofstream file(_filename);
-
-		if (!file.good())
-			return false;
 		makeLock();
-		for (const auto &line : to_send) {
-			_first_line += 1;
-			file << line << std::endl;
+
+		std::ofstream file(_filename, std::ios_base::app | std::ios_base::out);
+		if (!file.good()) {
+			file.close();
+			removeLock();
+			return false;
 		}
+
+		for (const auto &line : to_send)
+			file << line << std::endl;
 		file.close();
 		removeLock();
 		return true;
@@ -53,7 +74,7 @@ namespace plazza {
 	{
 		std::ifstream file(_lockname.c_str());
 
-		return file.good();
+		return !file.good();
 	}
 
 	void Logger::makeLock() const

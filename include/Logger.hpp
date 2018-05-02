@@ -14,17 +14,27 @@
 namespace plazza {
 	class Logger {
 		public:
+			static Logger& getInstance()  { static Logger instance; return instance; }
+
+			Logger(const Logger&) = delete;
+			void operator=(const Logger&) = delete;
+
+			bool write(const std::vector<std::string> &to_send) const;
+			std::vector<std::string> read();
+
+		private:
 			Logger();
 			~Logger();
-			bool write(const std::vector<std::string> &to_send);
-			std::vector<std::string> read() const;
-		private:
+
 			void makeLock() const;
 			void removeLock() const;
 			bool lockExist() const;
+
 			long _first_line;
+
 			std::string _filename;
 			std::string _lockname;
+
 	};
 }
 
