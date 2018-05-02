@@ -27,7 +27,6 @@ namespace communication {
 			int _portNumber;
 			int _masterSocket;
 			int _socketClient;
-			char _message[BUFSIZ];
 			struct sockaddr_in _server_addr;
 	};
 }

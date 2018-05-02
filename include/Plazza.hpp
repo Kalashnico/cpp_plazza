@@ -52,6 +52,8 @@ class Plazza {
 		void checkDeadSlaves() noexcept;
 		std::vector<std::string> split(const std::string &, char) const noexcept;
 
+		bool _master;
+
 		int _maxThreads;
 		int _masterSocket;
 		std::vector<std::unique_ptr<communication::Process>> _slaves;

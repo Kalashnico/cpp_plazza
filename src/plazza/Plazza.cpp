@@ -16,6 +16,7 @@
 #include <sys/wait.h>
 #include <signal.h>
 #include "Plazza.hpp"
+#include "Logger.hpp"
 #include "Process.hpp"
 #include "InternetSockets.hpp"
 #include "Exceptions.hpp"
@@ -23,7 +24,7 @@
 namespace plazza {
 
 Plazza::Plazza(int maxThreads)
-	: _maxThreads(maxThreads)
+	: _master(true), _maxThreads(maxThreads)
 {
 	_masterSocket = socket(AF_INET , SOCK_STREAM , 0);
 
@@ -46,6 +47,13 @@ Plazza::~Plazza()
 	for (auto &slave : _slaves)
 		while (waitpid(slave.get()->getSlavePid(), nullptr, 0) != -1);
 	close(_masterSocket);
+
+	if (!_master)
+		return;
+
+	auto results = Logger::getInstance().read();
+	for (const auto &result : results)
+		std::cout << result << std::endl;
 }
 
 int Plazza::setupCommand(command cmd)
@@ -95,6 +103,7 @@ int Plazza::setupCommand(command cmd)
 				break;
 			case 0:
 				close(_masterSocket);
+				_master = false;
 				_slaves.back().get()->runProcess();
 				return 1;
 			default:
@@ -127,10 +136,10 @@ int Plazza::sendCommandToSlave(command cmd, communication::Process *slave, int n
 
 int Plazza::recieveSlaveStatus(int nbrFiles, int socketClient, communication::Process *slave)
 {
-	char message[2];
+	char message[3];
 	ssize_t readSize{};
 
-	memset(message, 0, 2);
+	memset(message, 0, 3);
 	readSize = recv(socketClient, message, 2, 0);
 
 	if (readSize < 0)
@@ -183,18 +192,20 @@ std::ostream &operator<<(std::ostream &out, const command &cmd)
 
 std::istream &operator>>(std::istream &in, command &cmd)
 {
-	char info[1];
+	std::string infoStr;
 	in >> cmd.files;
-	in >> info;
+	in >> infoStr;
 
-	switch (info[0]) {
-		case '0':
+	auto info = stoi(infoStr);
+
+	switch (info) {
+		case 0:
 			cmd.info = PHONE_NUMBER;
 			break;
-		case '1':
+		case 1:
 			cmd.info = EMAIL_ADDRESS;
 			break;
-		case '2':
+		case 2:
 			cmd.info = IP_ADDRESS;
 			break;
 		default:

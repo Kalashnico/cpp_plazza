@@ -68,14 +68,15 @@ namespace communication {
 
 	command InternetSockets::receive()
 	{
+		char message[BUFSIZ + 1];
 		ssize_t readSize{};
 
-		std::memset(_message, 0, BUFSIZ);
-		readSize = recv(_socketClient, _message, BUFSIZ, 0);
+		std::memset(message, 0, BUFSIZ + 1);
+		readSize = recv(_socketClient, message, BUFSIZ, 0);
 		if (readSize < 0)
 			throw exceptions::RecieveError("Failed to recieve command");
 
-		std::istringstream iss(_message);
+		std::istringstream iss(message);
 		command cmd{"", UNDEFINED};
 
 		iss >> cmd;
