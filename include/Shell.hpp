@@ -26,7 +26,6 @@ class Shell {
 		void clear() noexcept;
 		void exit() noexcept;
 
-		bool _master;
 		bool _exit;
 
 		std::unique_ptr<Plazza> _plazza;
