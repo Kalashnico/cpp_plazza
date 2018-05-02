@@ -2,10 +2,11 @@
 // Created by Nicolas Guerin on 23/04/2018.
 //
 
-#include <iostream>
 #include <fstream>
 #include <sstream>
 #include "Regex.hpp"
+#include "Logger.hpp"
+#include "Exceptions"
 
 namespace parser {
 
@@ -30,7 +31,7 @@ namespace parser {
 			file.close();
 		}
 		else {
-			throw std::invalid_argument("Invalid file: " + _file + ".");
+			throw exceptions::FileError("Invalid file: " + _file);
 		}
 		std::vector<std::string> buffToken{};
 
@@ -60,9 +61,7 @@ namespace parser {
 				break;
 		}
 
-		//TODO: Replace with named pipes
-		for (auto match : _matches)
-			std::cout << match << std::endl;
+		while (!plazza::Logger::getInstance().write(_matches));
 	}
 
 	std::vector<std::string> Regex::parsePhone() const noexcept
