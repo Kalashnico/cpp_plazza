@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 #include <memory>
+#include <thread>
 #include <netinet/in.h>
 
 enum Information {
@@ -50,9 +51,13 @@ class Plazza {
 
 		bool doFilesExist(const std::vector<std::string>) const noexcept;
 		void checkDeadSlaves() noexcept;
+		void logCheck() const noexcept;
 		std::vector<std::string> split(const std::string &, char) const noexcept;
 
 		bool _master;
+		bool _threadExit;
+
+		std::thread _logCheckThread;
 
 		int _maxThreads;
 		int _masterSocket;

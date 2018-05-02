@@ -15,6 +15,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <signal.h>
+#include <chrono>
 #include "Plazza.hpp"
 #include "Logger.hpp"
 #include "Process.hpp"
@@ -24,7 +25,7 @@
 namespace plazza {
 
 Plazza::Plazza(int maxThreads)
-	: _master(true), _maxThreads(maxThreads)
+	: _master(true), _threadExit(false), _maxThreads(maxThreads)
 {
 	_masterSocket = socket(AF_INET , SOCK_STREAM , 0);
 
@@ -51,9 +52,9 @@ Plazza::~Plazza()
 	if (!_master)
 		return;
 
-	auto results = Logger::getInstance().read();
-	for (const auto &result : results)
-		std::cout << result << std::endl;
+	_threadExit = true;
+	if (_logCheckThread.joinable())
+		_logCheckThread.join();
 }
 
 int Plazza::setupCommand(command cmd)
@@ -96,6 +97,11 @@ int Plazza::setupCommand(command cmd)
 
 		_slaves.emplace_back(std::make_unique<communication::Process>(_maxThreads, iSocket));
 
+		_threadExit = true;
+		if (_logCheckThread.joinable())
+			_logCheckThread.join();
+		_threadExit = false;
+
 		pid_t slavePid = fork();
 		switch (slavePid) {
 			case -1:
@@ -107,6 +113,7 @@ int Plazza::setupCommand(command cmd)
 				_slaves.back().get()->runProcess();
 				return 1;
 			default:
+				_logCheckThread = std::thread(&Plazza::logCheck, this);
 				_slaves.back().get()->setSlavePid(slavePid);
 				_slaves.back().get()->setAcceptedSocket(slaveSocket);
 				try {
@@ -169,6 +176,20 @@ void Plazza::checkDeadSlaves() noexcept
 	_slaves.erase(std::remove_if(_slaves.begin(), _slaves.end(),
 		[](std::unique_ptr<communication::Process> &slave) { return waitpid(slave.get()->getSlavePid(), nullptr, WNOHANG) == slave.get()->getSlavePid(); }),
 		_slaves.end());
+}
+
+void Plazza::logCheck() const noexcept
+{
+	std::vector<std::string> results;
+
+	while (true) {
+		if (this->_threadExit)
+			return;
+		results = Logger::getInstance().read();
+		for (const auto &result : results)
+			std::cout << result << std::endl;
+		std::this_thread::sleep_for(std::chrono::milliseconds(500));
+	}
 }
 
 std::vector<std::string> Plazza::split(const std::string &input, char delim) const noexcept
