@@ -6,7 +6,7 @@
 #include <sstream>
 #include "Regex.hpp"
 #include "Logger.hpp"
-#include "Exceptions"
+#include "Exceptions.hpp"
 
 namespace parser {
 
@@ -17,9 +17,7 @@ namespace parser {
 	}
 
 	Regex::~Regex()
-	{
-
-	}
+	{}
 
 
 	void Regex::openFile()
