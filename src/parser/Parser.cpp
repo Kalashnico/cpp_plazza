@@ -2,10 +2,10 @@
 // Created by Nicolas Guerin on 17/04/2018.
 //
 
-#include <iostream>
 #include <sstream>
 #include <iterator>
 #include "Parser.hpp"
+#include "Exceptions.hpp"
 
 namespace parser {
 	Parser::Parser() : _files{}, _info{}
@@ -49,7 +49,7 @@ namespace parser {
 							std::istream_iterator<std::string>{}};
 
 			if (tokens.size() <= 1 || commandErrors(tokens))
-				throw std::invalid_argument("Command line invalid");
+				throw exceptions::CommandError("Invalid command");
 
 			const auto info = tokens.back();
 			_info.emplace(stringToInfo(info));
