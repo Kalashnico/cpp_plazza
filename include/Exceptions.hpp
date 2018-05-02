@@ -64,4 +64,16 @@ class EnqueueError : public PlazzaError
 		EnqueueError(const std::string &message);
 };
 
+class FileError : public PlazzaError
+{
+	public:
+		FileError(const std::string &message);
+};
+
+class CommandError : public PlazzaError
+{
+	public:
+		CommandError(const std::string &message);
+};
+
 }

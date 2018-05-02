@@ -41,6 +41,14 @@ EnqueueError::EnqueueError(const std::string &message)
 	: PlazzaError("Enqueue Exception: " + message)
 {}
 
+FileError::FileError(const std::string &message)
+	: PlazzaError("File Exception: " + message)
+{}
+
+CommandError::CommandError(const std::string &message)
+	: PlazzaError("Command Exception: " + message)
+{}
+
 const char *PlazzaError::what() const noexcept
 {
 	return _message.c_str();
