@@ -34,7 +34,7 @@ namespace communication {
 }
 
 
-#define PORT 1337
+#define PORT 51234
 
 namespace plazza {
 

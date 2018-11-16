@@ -10,7 +10,7 @@ CXX	= g++ -o2
 RM	= rm -f
 
 CXXFLAGS = -I./include
-CXXFLAGS += -W -Wall -Wextra -Werror -std=c++14
+CXXFLAGS += -W -Wall -Wextra -std=c++14
 LDFLAGS = -lpthread
 
 NAME 	= plazza

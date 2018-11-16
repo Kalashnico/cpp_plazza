@@ -12,7 +12,7 @@
 #include "Exceptions.hpp"
 
 namespace communication {
-	InternetSockets::InternetSockets(int masterSocket) : _portNumber{1337}, _masterSocket{masterSocket}
+	InternetSockets::InternetSockets(int masterSocket) : _portNumber{51234}, _masterSocket{masterSocket}
 	{
 		_socketClient = socket(AF_INET , SOCK_STREAM , 0);
 
